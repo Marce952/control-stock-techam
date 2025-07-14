@@ -4,10 +4,10 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 
 const SliderComponent = () => {
+  const [isSelected, setIsSelected] = useState(false)
   const [content, setContent] = useState([
     'Productos', 'Clientes', 'Proveedores', 'Ventas', 'Compras',
   ])
-
 
   return (
       <div
@@ -20,10 +20,11 @@ const SliderComponent = () => {
             className='w-full'
           >
             <Button
-              className='text-white bg-[#8906e6] hover:bg-[#a00ae6] border-0 w-full'
+              className='text-white bg-[#8906e6] hover:bg-[#a00ae6] border-0 w-full ${'
               variant="bordered"
               size="lg"
               color="primary"
+              onPress={() => {setIsSelected(!isSelected)}}
             >
               {item}
             </Button>
