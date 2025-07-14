@@ -1,10 +1,9 @@
 'use client'
 import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure } from '@heroui/react'
-import { MdProductionQuantityLimits } from "react-icons/md";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 import React from 'react'
 import ModalComponent from './ModalComponentAdd';
-
-const Supplier = () => {
+const Sale = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -19,15 +18,15 @@ const Supplier = () => {
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
         <Input
-          placeholder='Buscar proveedor'
+          placeholder='Buscar venta'
         />
         <Button
-          startContent={<MdProductionQuantityLimits fontSize={'200px'} />}
+          startContent={<FaMoneyBillTransfer fontSize={'200px'} />}
           variant='solid'
           color='primary'
           onPress={onOpen}
         >
-          Añadir proveedor
+          Añadir venta
         </Button>
       </div>
 
@@ -67,4 +66,4 @@ const Supplier = () => {
   )
 }
 
-export default Supplier
+export default Sale

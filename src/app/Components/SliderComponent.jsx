@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 const SliderComponent = () => {
   const [isSelected, setIsSelected] = useState(false)
   const [content, setContent] = useState([
-    'Productos', 'Clientes', 'Proveedores', 'Ventas', 'Compras',
+    'Productos', 'Clientes', 'Proveedores', 'Ventas',
   ])
 
   return (
