@@ -1,44 +1,46 @@
 import React from 'react'
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-} from "@heroui/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@heroui/react'
 
-const ModalComponentAdd = ({isOpen, onOpenChange}) => {
-  const productsProps = [
-    {type: "text", placeholder: "Nombre del producto"},
-    {type: "number", placeholder: "Precio del producto"},
-    {type: "number", placeholder: "Cantidad del producto"},
-  ]
+const ModalComponentAdd = ({
+  isOpen,
+  onOpenChange,
+  title,
+  inputs,
+  newProduct,
+  setNewProduct,
+  onPress
+}) => {
+
+  const handleChange = (name, value) => {
+    setNewProduct(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">Añadir un producto</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
             <ModalBody>
-              {
-                productsProps.map((input, index) => (
-                  <Input
-                    key={index}
-                    type={input.type}
-                    placeholder={input.placeholder}
-                    className="mb-4"
-                  />
-                ))
-              }
+              {inputs.map((input, index) => (
+                <Input
+                  key={index}
+                  type={input.type}
+                  placeholder={input.placeholder}
+                  value={newProduct[input.name] || ""}
+                  onChange={(e) => handleChange(input.name, e.target.value)}
+                  className="mb-4"
+                />
+              ))}
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
                 Cerrar
               </Button>
-              <Button color="primary" onPress={onClose}>
+              <Button color="primary" onPress={onPress}>
                 Guardar
               </Button>
             </ModalFooter>
@@ -46,7 +48,7 @@ const ModalComponentAdd = ({isOpen, onOpenChange}) => {
         )}
       </ModalContent>
     </Modal>
-  )
-}
+  );
+};
 
-export default ModalComponentAdd
+export default ModalComponentAdd;
