@@ -1,11 +1,41 @@
 'use client'
 import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure } from '@heroui/react'
 import { MdProductionQuantityLimits } from "react-icons/md";
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ModalComponent from './ModalComponentAdd';
+import axios from 'axios';
+import { CiEdit } from 'react-icons/ci';
 
 const Supplier = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [products, setProducts] = useState([]);
+  const [newProduct, setNewProduct] = useState({});
+
+  useEffect(() => {
+    get();
+  }, []);
+
+  const get = async () => {
+    try {
+      const response = await axios.get('/pages/api/suppliers');
+      if (!response.data) return;
+      setProducts(response.data);
+    } catch (error) {
+      console.log("🚀 ~ getProducts ~ error:", error);
+    }
+  };
+
+  const post = async () => {
+    try {
+      const response = await axios.post('/pages/api/suppliers', newProduct);
+      if (!response.data) return;
+      setNewProduct({});
+      get();
+      onOpenChange(); // Cierra el modal después de guardar
+    } catch (error) {
+      console.log("🚀 ~ post ~ error:", error);
+    }
+  };
 
   return (
     <div
@@ -13,8 +43,17 @@ const Supplier = () => {
     >
       <ModalComponent
         isOpen={isOpen}
-        onOpen={onOpen}
         onOpenChange={onOpenChange}
+        title="Añadir un proveedor"
+        inputs={[
+          { type: "text", placeholder: "Nombre del proveedor", name: "nombre" },
+          { type: "text", placeholder: "Direccion", name: "direccion" },
+          { type: "text", placeholder: "Telefono", name: "telefono" },
+          { type: "text", placeholder: "Mail", name: "mail" }
+        ]}
+        newProduct={newProduct}
+        setNewProduct={setNewProduct}
+        onPress={post}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -35,31 +74,26 @@ const Supplier = () => {
       <div>
         <Table aria-label="Example static collection table">
           <TableHeader>
-            <TableColumn>NAME</TableColumn>
-            <TableColumn>ROLE</TableColumn>
-            <TableColumn>STATUS</TableColumn>
+            <TableColumn>Nombre</TableColumn>
+            <TableColumn>Direccion</TableColumn>
+            <TableColumn>Telefono</TableColumn>
+            <TableColumn>Mail</TableColumn>
+            <TableColumn>Editar</TableColumn>
           </TableHeader>
           <TableBody>
-            <TableRow key="1">
-              <TableCell>Tony Reichert</TableCell>
-              <TableCell>CEO</TableCell>
-              <TableCell>Active</TableCell>
-            </TableRow>
-            <TableRow key="2">
-              <TableCell>Zoey Lang</TableCell>
-              <TableCell>Technical Lead</TableCell>
-              <TableCell>Paused</TableCell>
-            </TableRow>
-            <TableRow key="3">
-              <TableCell>Jane Fisher</TableCell>
-              <TableCell>Senior Developer</TableCell>
-              <TableCell>Active</TableCell>
-            </TableRow>
-            <TableRow key="4">
-              <TableCell>William Howard</TableCell>
-              <TableCell>Community Manager</TableCell>
-              <TableCell>Vacation</TableCell>
-            </TableRow>
+            {Array.isArray(products) && products.map((p) => (
+              <TableRow key={p.id}>
+                <TableCell>{p.nombre}</TableCell>
+                <TableCell>{p.direccion}</TableCell>
+                <TableCell>{p.telefono}</TableCell>
+                <TableCell>{p.mail}</TableCell>
+                <TableCell>
+                  <Button color='primary' className='text-xl'>
+                    <CiEdit />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { nombre, direccion, telefono, mail } = body;
 
     const response = await conn.query(
-      'INSERT INTO productos (nombre, direccion, telefono, mail) VALUES ($1, $2, $3, $4)',
+      'INSERT INTO proveedores (nombre, direccion, telefono, mail) VALUES ($1, $2, $3, $4)',
       [nombre, direccion, telefono, mail]
     );
     console.log("🚀 ~ POST ~ response:", response)
