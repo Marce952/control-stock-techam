@@ -1,10 +1,39 @@
 'use client'
 import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure } from '@heroui/react'
 import { FaMoneyBillTransfer } from "react-icons/fa6";
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ModalComponent from './ModalComponentAdd';
+import { CiEdit } from 'react-icons/ci';
 const Sale = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [sales, setSales] = useState([]);
+  const [newSale, setNewSale] = useState({});
+
+  useEffect(() => {
+    get();
+  }, [])
+
+  const get = async () => {
+    try {
+      const response = await axios.get('/pages/api/sale');
+      if (!response.data) return;
+      setSales(response.data);
+    } catch (error) {
+      console.log("🚀 ~ getProducts ~ error:", error);
+    }
+  }
+
+  const post = async () => {
+    try {
+      const response = await axios.post('/pages/api/sale', newSale);
+      if (!response.data) return;
+      setNewSale({});
+      get();
+      onOpenChange(); // Cierra el modal después de guardar
+    } catch (error) {
+      console.log("🚀 ~ post ~ error:", error);
+    }
+  };
 
   return (
     <div
@@ -12,8 +41,16 @@ const Sale = () => {
     >
       <ModalComponent
         isOpen={isOpen}
-        onOpen={onOpen}
         onOpenChange={onOpenChange}
+        title="Añadir una venta"
+        inputs={[
+          { type: "number", placeholder: "Cantidad", name: "total_stock" },
+          { type: "number", placeholder: "Precio", name: "precio_total" },
+          { type: "text", placeholder: "Detalle", name: "observacion" },
+        ]}
+        newProduct={newSale}
+        setNewProduct={setNewSale}
+        onPress={post}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -34,31 +71,23 @@ const Sale = () => {
       <div>
         <Table aria-label="Example static collection table">
           <TableHeader>
-            <TableColumn>NAME</TableColumn>
-            <TableColumn>ROLE</TableColumn>
-            <TableColumn>STATUS</TableColumn>
+            <TableColumn>Stock</TableColumn>
+            <TableColumn>Precio Total</TableColumn>
+            <TableColumn>Detalle</TableColumn>
           </TableHeader>
           <TableBody>
-            <TableRow key="1">
-              <TableCell>Tony Reichert</TableCell>
-              <TableCell>CEO</TableCell>
-              <TableCell>Active</TableCell>
-            </TableRow>
-            <TableRow key="2">
-              <TableCell>Zoey Lang</TableCell>
-              <TableCell>Technical Lead</TableCell>
-              <TableCell>Paused</TableCell>
-            </TableRow>
-            <TableRow key="3">
-              <TableCell>Jane Fisher</TableCell>
-              <TableCell>Senior Developer</TableCell>
-              <TableCell>Active</TableCell>
-            </TableRow>
-            <TableRow key="4">
-              <TableCell>William Howard</TableCell>
-              <TableCell>Community Manager</TableCell>
-              <TableCell>Vacation</TableCell>
-            </TableRow>
+            {Array.isArray(sales) && sales.map((p) => (
+              <TableRow key={p.id}>
+                <TableCell>{p.total_stock}</TableCell>
+                <TableCell>{p.precio_total}</TableCell>
+                <TableCell>{p.observacion}</TableCell>
+                <TableCell>
+                  <Button color='primary' className='text-xl'>
+                    <CiEdit />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
