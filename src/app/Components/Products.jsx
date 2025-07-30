@@ -10,9 +10,15 @@ const Products = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({});
+  const [suppliers, setSuppliers] = useState([]);
+  const [editProduct, setEditProduct] = useState(null);
 
   useEffect(() => {
     get();
+  }, []);
+
+  useEffect(() => {
+    getSuppliers();
   }, []);
 
   const get = async () => {
@@ -25,24 +31,43 @@ const Products = () => {
     }
   };
 
-  const post = async () => {
+  const onSave = async () => {
     try {
-      const response = await axios.post('/pages/api/products', newProduct);
-      if (!response.data) return;
+      if (editProduct) {
+        await axios.put(`/pages/api/products/${editProduct.id}`, newProduct);
+      } else {
+        await axios.post('/pages/api/products', newProduct);
+      }
       setNewProduct({});
+      setEditProduct(null);
       get();
-      onOpenChange(); // Cierra el modal después de guardar
+      onOpenChange();
     } catch (error) {
       console.log("🚀 ~ post ~ error:", error);
     }
   };
 
+  const getSuppliers = async () => {
+    try {
+      const response = await axios.get('/pages/api/suppliers');
+      if (!response.data) return;
+      setSuppliers(response.data)
+    } catch (error) {
+      console.log("🚀 ~ getSuppliers ~ error:", error)
+    }
+  }
+
   return (
     <div className='flex flex-col gap-4 p-4'>
       <ModalComponentAdd
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        title="Añadir un producto"
+        onOpenChange={() => {
+          setEditProduct(null);
+          setNewProduct({});
+          onOpenChange();
+        }}
+        title={editProduct ? "Editar producto" : "Añadir un producto"}
+        buttonTitle={editProduct ? "Editar" : "Añadir"}
         inputs={[
           { type: "text", placeholder: "Nombre del producto", name: "nombre" },
           { type: "number", placeholder: "Precio del producto", name: "precio" },
@@ -50,7 +75,8 @@ const Products = () => {
         ]}
         newProduct={newProduct}
         setNewProduct={setNewProduct}
-        onPress={post}
+        onPress={onSave}
+        productsSupplier={suppliers}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -59,7 +85,11 @@ const Products = () => {
           startContent={<TbDeviceAirpods fontSize={'200px'} />}
           variant='solid'
           color='primary'
-          onPress={onOpen}
+          onPress={() => {
+            setEditProduct(null);
+            setNewProduct({});
+            onOpen();
+          }}
         >
           Añadir producto
         </Button>
@@ -83,10 +113,18 @@ const Products = () => {
                 <TableCell>{product.descripcion}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>{product.precio}</TableCell>
-                <TableCell>{product.idProveedor}</TableCell>
-                <TableCell>{product.idCategoria}</TableCell>
+                <TableCell className={product.proveedor === null && 'text-red-500'}>{product?.proveedor?.nombre || "No hay proveedor asignado"}</TableCell>
+                <TableCell className={product.categoria === null && 'text-red-500'}>{product?.categoria?.tipo || "No hay categoria asignada"}</TableCell>
                 <TableCell>
-                  <Button color='primary' className='text-xl'>
+                  <Button
+                    color='primary'
+                    className='text-xl'
+                    onPress={() => {
+                      setEditProduct(product);
+                      setNewProduct(product);
+                      onOpen();
+                    }}
+                  >
                     <CiEdit />
                   </Button>
                 </TableCell>

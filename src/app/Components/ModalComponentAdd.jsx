@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@heroui/react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from '@heroui/react'
 
 const ModalComponentAdd = ({
   isOpen,
@@ -8,10 +8,13 @@ const ModalComponentAdd = ({
   inputs,
   newProduct,
   setNewProduct,
-  onPress
+  onPress,
+  productsSupplier,
+  buttonTitle
 }) => {
 
   const handleChange = (name, value) => {
+    console.log("🚀 ~ handleChange ~ name, value:", name, value)
     setNewProduct(prev => ({
       ...prev,
       [name]: value
@@ -35,13 +38,31 @@ const ModalComponentAdd = ({
                   className="mb-4"
                 />
               ))}
+              {
+                productsSupplier && productsSupplier.length > 0 &&
+                <Select
+                  label={"Proveedores"}
+                  onChange={(e) => handleChange('idProveedor', e.target.value)}
+                >
+                  {
+                    productsSupplier.map((supplier, index) => (
+                      <SelectItem
+                        key={supplier.id}
+                        value={supplier.id}
+                      >
+                        {supplier.nombre}
+                      </SelectItem>
+                    ))
+                  }
+                </Select>
+              }
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
                 Cerrar
               </Button>
               <Button color="primary" onPress={onPress}>
-                Guardar
+                {buttonTitle}
               </Button>
             </ModalFooter>
           </>
