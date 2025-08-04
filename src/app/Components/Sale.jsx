@@ -4,13 +4,19 @@ import { FaMoneyBillTransfer } from "react-icons/fa6";
 import React, { useEffect, useState } from 'react'
 import ModalComponent from './ModalComponentAdd';
 import { CiEdit } from 'react-icons/ci';
+import axios from 'axios';
 const Sale = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [clients, setClients] = useState([]);
+  const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
   const [newSale, setNewSale] = useState({});
+  const [edit, setEdit] = useState(null);
 
   useEffect(() => {
     get();
+    getProducts();
+    getClients();
   }, [])
 
   const get = async () => {
@@ -23,13 +29,39 @@ const Sale = () => {
     }
   }
 
-  const post = async () => {
+  const getClients = async () => {
     try {
-      const response = await axios.post('/pages/api/sale', newSale);
+      const response = await axios.get('/pages/api/clients');
       if (!response.data) return;
+
+      setClients(response.data);
+    } catch (error) {
+      console.log("🚀 ~ getClients ~ error:", error)
+    }
+  }
+
+  const getProducts = async () => {
+    try {
+      const response = await axios.get('/pages/api/products');
+      if (!response.data) return;
+
+      setProducts(response.data);
+    } catch (error) {
+      console.log("🚀 ~ getProducts ~ error:", error)
+    }
+  }
+
+  const onSave = async () => {
+    try {
+      if (edit) {
+        await axios.put(`/pages/api/sale/${edit.id}`, newSale);
+      } else {
+        await axios.post('/pages/api/sale', newSale);
+      }
       setNewSale({});
+      setEdit(null);
       get();
-      onOpenChange(); // Cierra el modal después de guardar
+      onOpenChange();
     } catch (error) {
       console.log("🚀 ~ post ~ error:", error);
     }
@@ -41,8 +73,13 @@ const Sale = () => {
     >
       <ModalComponent
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        title="Añadir una venta"
+        onOpenChange={() => {
+          setEdit(null);
+          setNewSale({});
+          onOpenChange();
+        }}
+        title={edit ? "Editar una venta" : "Añadir una venta"}
+        buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
           { type: "number", placeholder: "Cantidad", name: "total_stock" },
           { type: "number", placeholder: "Precio", name: "precio_total" },
@@ -50,7 +87,23 @@ const Sale = () => {
         ]}
         newProduct={newSale}
         setNewProduct={setNewSale}
-        onPress={post}
+        onPress={onSave}
+        selects={[
+          {
+            label: "Clientes",
+            name: "idCliente",
+            options: clients,
+            getLabel: (c) => c.nombre,
+            getValue: (c) => c.id
+          },
+          {
+            label: "Productos",
+            name: "idProducto",
+            options: products,
+            getLabel: (p) => p.nombre,
+            getValue: (p) => p.id
+          }
+        ]}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -74,6 +127,7 @@ const Sale = () => {
             <TableColumn>Stock</TableColumn>
             <TableColumn>Precio Total</TableColumn>
             <TableColumn>Detalle</TableColumn>
+            <TableColumn>Editar</TableColumn>
           </TableHeader>
           <TableBody>
             {Array.isArray(sales) && sales.map((p) => (
@@ -82,7 +136,15 @@ const Sale = () => {
                 <TableCell>{p.precio_total}</TableCell>
                 <TableCell>{p.observacion}</TableCell>
                 <TableCell>
-                  <Button color='primary' className='text-xl'>
+                  <Button
+                    color='primary'
+                    className='text-xl'
+                    onPress={() => {
+                      setEdit(p);
+                      setNewSale(p);
+                      onOpen();
+                    }}
+                  >
                     <CiEdit />
                   </Button>
                 </TableCell>

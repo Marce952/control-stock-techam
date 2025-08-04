@@ -9,10 +9,9 @@ const ModalComponentAdd = ({
   newProduct,
   setNewProduct,
   onPress,
-  productsSupplier,
-  buttonTitle
+  buttonTitle,
+  selects = []
 }) => {
-
   const handleChange = (name, value) => {
     console.log("🚀 ~ handleChange ~ name, value:", name, value)
     setNewProduct(prev => ({
@@ -20,6 +19,7 @@ const ModalComponentAdd = ({
       [name]: value
     }));
   };
+
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -39,22 +39,24 @@ const ModalComponentAdd = ({
                 />
               ))}
               {
-                productsSupplier && productsSupplier.length > 0 &&
-                <Select
-                  label={"Proveedores"}
-                  onChange={(e) => handleChange('idProveedor', e.target.value)}
-                >
-                  {
-                    productsSupplier.map((supplier, index) => (
+                selects.map((select, idx) => (
+                  <Select
+                    key={idx}
+                    label={select.label}
+                    value={newProduct[select.name] || ""}
+                    onChange={(e) => handleChange(select.name, e.target.value)}
+                    className='mb-4'
+                  >
+                    {select.options.map((option, i) => (
                       <SelectItem
-                        key={supplier.id}
-                        value={supplier.id}
+                        key={option.id}
+                        value={select.getValue(option)}
                       >
-                        {supplier.nombre}
+                        {select.getLabel(option)}
                       </SelectItem>
-                    ))
-                  }
-                </Select>
+                    ))}
+                  </Select>
+                ))
               }
             </ModalBody>
             <ModalFooter>

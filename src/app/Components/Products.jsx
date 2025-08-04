@@ -9,12 +9,14 @@ import axios from 'axios';
 const Products = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newProduct, setNewProduct] = useState({});
   const [suppliers, setSuppliers] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
 
   useEffect(() => {
     get();
+    getCategories();
   }, []);
 
   useEffect(() => {
@@ -30,6 +32,17 @@ const Products = () => {
       console.log("🚀 ~ getProducts ~ error:", error);
     }
   };
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get('/pages/api/categories');
+      if (!response.data) return;
+
+      setCategories(response.data);
+    } catch (error) {
+      
+    }
+  }
 
   const onSave = async () => {
     try {
@@ -76,7 +89,22 @@ const Products = () => {
         newProduct={newProduct}
         setNewProduct={setNewProduct}
         onPress={onSave}
-        productsSupplier={suppliers}
+        selects={[
+          {
+            label: "Proveedores",
+            name: "idProveedor",
+            options: suppliers,
+            getLabel: (s) => s.nombre,
+            getValue: (s) => s.id,
+          },
+          {
+            label: "Categoria",
+            name: "idCategoria",
+            options: categories,
+            getLabel: (c) => c.tipo,
+            getValue: (c) => c.id,
+          }
+        ]}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
