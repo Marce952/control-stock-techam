@@ -9,9 +9,11 @@ const Sale = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
+  const [uniqueProduct, setUniqueProducts] = useState([]);
   const [sales, setSales] = useState([]);
   const [newSale, setNewSale] = useState({});
   const [edit, setEdit] = useState(null);
+  const [productSearch, setProductSearch] = useState(null);
 
   useEffect(() => {
     get();
@@ -57,6 +59,7 @@ const Sale = () => {
         await axios.put(`/pages/api/sale/${edit.id}`, newSale);
       } else {
         await axios.post('/pages/api/sale', newSale);
+        await axios.put(`/pages/api/products/${uniqueProduct[0].id}`, { ...uniqueProduct[0], stock: uniqueProduct[0].stock - newSale.total_stock });
       }
       setNewSale({});
       setEdit(null);
@@ -66,6 +69,20 @@ const Sale = () => {
       console.log("🚀 ~ post ~ error:", error);
     }
   };
+
+  const handleProductChange = async (value) => {
+    setProductSearch(value)
+    console.log("🚀 ~ handleProductChange ~ value:", value)
+
+    try {
+      const response = await axios.get(`/pages/api/products/${value}`);
+      if (!response.data) return;
+      setUniqueProducts(response.data);
+      console.log(response.data[0]);
+    } catch (error) {
+      console.log("🚀 ~ handleProductChange ~ error:", error)
+    }
+  }
 
   return (
     <div
@@ -77,13 +94,15 @@ const Sale = () => {
           setEdit(null);
           setNewSale({});
           onOpenChange();
+          setProductSearch(null);
         }}
         title={edit ? "Editar una venta" : "Añadir una venta"}
         buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
-          { type: "number", placeholder: "Cantidad", name: "total_stock" },
-          { type: "number", placeholder: "Precio", name: "precio_total" },
-          { type: "text", placeholder: "Detalle", name: "observacion" },
+          { type: "number", placeholder: "Cantidad", name: "total_stock", isDisabled: !productSearch, max: uniqueProduct[0]?.stock || "" },
+          { type: "number", placeholder: "Stock", value: uniqueProduct[0]?.stock || "", isDisabled: true },
+          { type: "number", placeholder: "Precio", name: "precio_total", isDisabled: !productSearch },
+          { type: "text", placeholder: "Detalle", name: "observacion", isDisabled: !productSearch },
         ]}
         newProduct={newSale}
         setNewProduct={setNewSale}
@@ -101,9 +120,11 @@ const Sale = () => {
             name: "idProducto",
             options: products,
             getLabel: (p) => p.nombre,
-            getValue: (p) => p.id
+            getValue: (p) => p.id,
+            onChange: handleProductChange
           }
         ]}
+        uniqueProduct={uniqueProduct}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>

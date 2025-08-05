@@ -10,16 +10,22 @@ const ModalComponentAdd = ({
   setNewProduct,
   onPress,
   buttonTitle,
-  selects = []
+  selects = [],
+  uniqueProduct = [],
 }) => {
+
   const handleChange = (name, value) => {
     console.log("🚀 ~ handleChange ~ name, value:", name, value)
+    if(name === "total_stock" && uniqueProduct[0]?.stock !== undefined){
+      const maxStock = uniqueProduct[0].stock;
+      value = Math.min(Number(value), maxStock);
+    }
+
     setNewProduct(prev => ({
       ...prev,
       [name]: value
     }));
   };
-
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -33,9 +39,11 @@ const ModalComponentAdd = ({
                   key={index}
                   type={input.type}
                   placeholder={input.placeholder}
-                  value={newProduct[input.name] || ""}
+                  value={newProduct[input.name] || input.value || ""}
                   onChange={(e) => handleChange(input.name, e.target.value)}
                   className="mb-4"
+                  isDisabled={input.isDisabled || false}
+                  max={input.max || ""}
                 />
               ))}
               {
@@ -44,7 +52,12 @@ const ModalComponentAdd = ({
                     key={idx}
                     label={select.label}
                     value={newProduct[select.name] || ""}
-                    onChange={(e) => handleChange(select.name, e.target.value)}
+                    onChange={(e) => {
+                      handleChange(select.name, e.target.value)
+                      if(select.onChange) {
+                        select.onChange(e.target.value);
+                      }
+                    }}
                     className='mb-4'
                   >
                     {select.options.map((option, i) => (
