@@ -1,25 +1,28 @@
 import { NextRequest } from "next/server";
-import { conn } from "../../../../utils/database";
+import prisma from "../../../../utils/prisma"; 
 
+// GET: listar todas las categorías
 export async function GET(request: NextRequest) {
-  const response = await conn.query('SELECT * FROM categoria');
-  return Response.json(response.rows);
+  try {
+    const response = await prisma.categoria.findMany();
+    return Response.json(response);
+  } catch (error) {
+    return Response.json({ error: "Error al obtener categorías" }, { status: 500 });
+  }
 }
 
+// POST: insertar nueva categoría
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { tipo } = body;
 
-    const response = await conn.query(
-      'INSERT INTO categoria (tipo) VALUES ($1)',
-      [tipo]
-    );
-    console.log("🚀 ~ POST ~ response:", response)
+    const categoria = await prisma.categoria.create({
+      data: { tipo },
+    });
 
-    return Response.json({ response });
+    return Response.json(categoria);
   } catch (error) {
-    console.log("🚀 ~ POST ~ error:", error)
-    return Response.json({ error }, { status: 500 });
+    return Response.json({ error: "Error al crear categoría" }, { status: 500 });
   }
 }

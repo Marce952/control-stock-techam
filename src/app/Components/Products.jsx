@@ -40,7 +40,7 @@ const Products = () => {
 
       setCategories(response.data);
     } catch (error) {
-      
+
     }
   }
 
@@ -92,14 +92,14 @@ const Products = () => {
         selects={[
           {
             label: "Proveedores",
-            name: "idProveedor",
+            name: "idproveedor",
             options: suppliers,
             getLabel: (s) => s.nombre,
             getValue: (s) => s.id,
           },
           {
             label: "Categoria",
-            name: "idCategoria",
+            name: "idcategoria",
             options: categories,
             getLabel: (c) => c.tipo,
             getValue: (c) => c.id,
@@ -149,7 +149,11 @@ const Products = () => {
                     className='text-xl'
                     onPress={() => {
                       setEditProduct(product);
-                      setNewProduct(product);
+                      setNewProduct({
+                        ...product,
+                        idproveedor: product.idProveedor ?? product.proveedor?.id ?? "",
+                        idcategoria: product.idCategoria ?? product.categoria?.id ?? "",
+                      });
                       onOpen();
                     }}
                   >
@@ -161,7 +165,7 @@ const Products = () => {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </div >
   );
 };
 

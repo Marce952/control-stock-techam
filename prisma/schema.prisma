@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categoria {
+  id        Int         @id @default(autoincrement())
+  tipo      String?     @db.VarChar(20)
+  productos productos[]
+}
+
+model clientes {
+  id         Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(20)
+  telefono   String?   @db.VarChar(20)
+  mail       String?   @db.VarChar(30)
+  deleted_at DateTime? @db.Timestamp(6)
+  ventas     ventas[]
+}
+
+model empleados {
+  id         Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(20)
+  rol        String    @db.VarChar(15)
+  telefono   String    @db.VarChar(20)
+  mail       String?   @db.VarChar(30)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+  ventas     ventas[]
+}
+
+model productos {
+  id          Int          @id @default(autoincrement())
+  nombre      String       @db.VarChar(30)
+  descripcion String?      @db.VarChar(150)
+  stock       Int?         @default(0)
+  precio      Decimal      @db.Decimal(10, 2)
+  idcategoria Int?
+  idproveedor Int?
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?    @default(now()) @db.Timestamp(6)
+  deleted_at  DateTime?    @db.Timestamp(6)
+  categoria   categoria?   @relation(fields: [idcategoria], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ventas      ventas[]
+}
+
+model proveedores {
+  id        Int         @id @default(autoincrement())
+  nombre    String      @db.VarChar(30)
+  direccion String?     @db.VarChar(50)
+  telefono  String?     @db.VarChar(20)
+  mail      String?     @db.VarChar(30)
+  productos productos[]
+}
+
+model ventas {
+  id           Int        @id @default(autoincrement())
+  total_stock  Int
+  precio_total Decimal    @db.Decimal(10, 2)
+  observacion  String?    @db.VarChar(150)
+  idproducto   Int?
+  idcliente    Int?
+  idempleado   Int?
+  created_at   DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?  @default(now()) @db.Timestamp(6)
+  deleted_at   DateTime?  @db.Timestamp(6)
+  clientes     clientes?  @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  empleados    empleados? @relation(fields: [idempleado], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productos    productos? @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

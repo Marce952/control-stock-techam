@@ -1,5 +1,6 @@
 import React from 'react'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from '@heroui/react'
+import { useEffect } from 'react';
 
 const ModalComponentAdd = ({
   isOpen,
@@ -16,7 +17,7 @@ const ModalComponentAdd = ({
 
   const handleChange = (name, value) => {
     console.log("🚀 ~ handleChange ~ name, value:", name, value)
-    if(name === "total_stock" && uniqueProduct[0]?.stock !== undefined){
+    if (name === "total_stock" && uniqueProduct[0]?.stock !== undefined) {
       const maxStock = uniqueProduct[0].stock;
       value = Math.min(Number(value), maxStock);
     }
@@ -26,6 +27,11 @@ const ModalComponentAdd = ({
       [name]: value
     }));
   };
+
+  useEffect(() => {
+    console.log("🚀 ~ ModalComponentAdd ~ newProduct:", newProduct)
+  }, [newProduct])
+
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -51,10 +57,10 @@ const ModalComponentAdd = ({
                   <Select
                     key={idx}
                     label={select.label}
-                    value={newProduct[select.name] || ""}
+                    value={(newProduct[select.name]) || ""}
                     onChange={(e) => {
                       handleChange(select.name, e.target.value)
-                      if(select.onChange) {
+                      if (select.onChange) {
                         select.onChange(e.target.value);
                       }
                     }}
@@ -63,7 +69,7 @@ const ModalComponentAdd = ({
                     {select.options.map((option, i) => (
                       <SelectItem
                         key={option.id}
-                        value={select.getValue(option)}
+                        value={Number(select.getValue(option))}
                       >
                         {select.getLabel(option)}
                       </SelectItem>
