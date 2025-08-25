@@ -56,6 +56,7 @@ model proveedores {
   direccion String?     @db.VarChar(50)
   telefono  String?     @db.VarChar(20)
   mail      String?     @db.VarChar(30)
+  sitio     String?     @db.VarChar(100)
   productos productos[]
 }
 

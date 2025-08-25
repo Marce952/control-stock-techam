@@ -1,6 +1,6 @@
 
 import { NextRequest } from "next/server";
-import { conn } from "../../../../../utils/database";
+import prisma from "../../../../../utils/prisma";
 
 export async function GET(request: NextRequest, context: { params: { id: string } }) {
     try {
@@ -9,9 +9,11 @@ export async function GET(request: NextRequest, context: { params: { id: string 
             return Response.json({ error: "Missing product id" }, { status: 400 });
         }
 
-        const response = await conn.query('SELECT * FROM productos WHERE id = $1', [id]);
-        // Devuelve solo el producto encontrado (o null si no existe)
-        return Response.json(response.rows || null);
+        const product = await prisma.productos.findUnique({
+            where: { id: Number(id) },
+        });
+
+        return Response.json(product || null);
     } catch (error) {
         return Response.json({ error }, { status: 500 });
     }
@@ -21,18 +23,23 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
     try {
         const body = await request.json();
         const id = context.params.id;
-        console.log("🚀 ~ GET ~ id:", id)
-        const { nombre, descripcion, stock, precio, idCategoria, idProveedor, updated_at } = body;
+        const { nombre, descripcion, stock, precio, idcategoria, idproveedor, updated_at } = body;
 
-        const response = await conn.query(
-            'UPDATE productos SET nombre = $1, descripcion = $2, stock = $3, precio = $4, idCategoria = $5, idProveedor = $6, updated_at = $7 WHERE id = $8',
-            [nombre, descripcion, stock, precio, idCategoria, idProveedor, updated_at, id]
-        );
-        console.log("🚀 ~ PUT ~ response:", response)
+        const updatedProduct = await prisma.productos.update({
+            where: { id: Number(id) },
+            data: {
+                nombre,
+                descripcion,
+                stock,
+                precio,
+                idcategoria,
+                idproveedor,
+                updated_at: updated_at ? new Date(updated_at) : undefined,
+            },
+        });
 
-        return Response.json({ response });
+        return Response.json({ updatedProduct });
     } catch (error) {
-        console.log("🚀 ~ PUT ~ error:", error)
         return Response.json({ error }, { status: 500 });
     }
 }
@@ -40,18 +47,14 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
 export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
     try {
         const id = context.params.id;
-        console.log("🚀 ~ GET ~ id:", id)
 
-        const response = await conn.query(
-            'UPDATE productos SET deleted_at = NOW() WHERE id = $1',
-            [id]
-        );
-        
-        console.log("🚀 ~ DELETE ~ response:", response)
+        const deletedProduct = await prisma.productos.update({
+            where: { id: Number(id) },
+            data: { deleted_at: new Date() },
+        });
 
-        return Response.json({ response });
+        return Response.json({ deletedProduct });
     } catch (error) {
-        console.log("🚀 ~ DELETE ~ error:", error)
         return Response.json({ error }, { status: 500 });
     }
 }
