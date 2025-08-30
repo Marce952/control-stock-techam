@@ -82,7 +82,7 @@ const ModalComponentAdd = ({
               <Button color="danger" variant="light" onPress={onClose}>
                 Cerrar
               </Button>
-              <Button color="primary" onPress={onPress}>
+              <Button color="primary" className='text-white' onPress={onPress}>
                 {buttonTitle}
               </Button>
             </ModalFooter>

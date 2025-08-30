@@ -83,6 +83,7 @@ const Products = () => {
         buttonTitle={editProduct ? "Editar" : "Añadir"}
         inputs={[
           { type: "text", placeholder: "Nombre del producto", name: "nombre" },
+          { type: "text", placeholder: "Descripcion producto", name: "descripcion" },
           { type: "number", placeholder: "Precio del producto", name: "precio" },
           { type: "number", placeholder: "Cantidad del producto", name: "stock" }
         ]}
@@ -110,8 +111,9 @@ const Products = () => {
       <div className='flex justify-around items-center gap-2'>
         <Input placeholder='Buscar producto' />
         <Button
-          startContent={<TbDeviceAirpods fontSize={'200px'} />}
+          startContent={<TbDeviceAirpods />}
           variant='solid'
+          className='text-white text-xl'
           color='primary'
           onPress={() => {
             setEditProduct(null);
@@ -119,7 +121,6 @@ const Products = () => {
             onOpen();
           }}
         >
-          Añadir producto
         </Button>
       </div>
       {/* Ver los productos */}
@@ -146,7 +147,7 @@ const Products = () => {
                 <TableCell>
                   <Button
                     color='primary'
-                    className='text-xl'
+                    className='text-xl text-white'
                     onPress={() => {
                       setEditProduct(product);
                       setNewProduct({

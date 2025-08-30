@@ -48,12 +48,12 @@ const Supplier = () => {
     >
       <ModalComponent
         isOpen={isOpen}
-        onOpenChange={()=>{
+        onOpenChange={() => {
           setEdit(null);
           setNewSupplier({})
           onOpenChange()
         }}
-        title={edit ? "Editar un proveedor" :"Añadir un proveedor"}
+        title={edit ? "Editar un proveedor" : "Añadir un proveedor"}
         buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
           { type: "text", placeholder: "Nombre del proveedor", name: "nombre" },
@@ -72,12 +72,12 @@ const Supplier = () => {
           placeholder='Buscar proveedor'
         />
         <Button
-          startContent={<MdProductionQuantityLimits fontSize={'200px'} />}
+          startContent={<MdProductionQuantityLimits />}
           variant='solid'
           color='primary'
+          className='text-white text-xl'
           onPress={onOpen}
         >
-          Añadir proveedor
         </Button>
       </div>
 
@@ -89,6 +89,7 @@ const Supplier = () => {
             <TableColumn>Direccion</TableColumn>
             <TableColumn>Telefono</TableColumn>
             <TableColumn>Mail</TableColumn>
+            <TableColumn>Sitio web</TableColumn>
             <TableColumn>Editar</TableColumn>
           </TableHeader>
           <TableBody>
@@ -98,8 +99,17 @@ const Supplier = () => {
                 <TableCell>{p.direccion}</TableCell>
                 <TableCell>{p.telefono}</TableCell>
                 <TableCell>{p.mail}</TableCell>
+                <TableCell className='line-clamp-1'>{p.sitio}</TableCell>
                 <TableCell>
-                  <Button color='primary' className='text-xl'>
+                  <Button
+                    color='primary'
+                    className='text-2xl text-white'
+                    onPress={() => {
+                      setEdit(p)
+                      setNewSupplier(p)
+                      onOpen()
+                    }}
+                  >
                     <CiEdit />
                   </Button>
                 </TableCell>

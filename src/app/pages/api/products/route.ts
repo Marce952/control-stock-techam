@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       nombre,
-      descripcion = "hola",
+      descripcion,
       stock,
       precio,
-      idCateggoria,
+      idCategoria,
       idProveedor,
     } = body;
 
@@ -29,14 +29,14 @@ export async function POST(request: NextRequest) {
       data: {
         nombre,
         descripcion,
-        stock,
+        stock: Number(stock),
         precio,
-        idcategoria: idCateggoria,
+        idcategoria: idCategoria,
         idproveedor: idProveedor,
       },
     });
 
-    return Response.json({ producto });
+    return Response.json(producto);
   } catch (error) {
     console.log("🚀 ~ POST ~ error:", error);
     return Response.json({ error }, { status: 500 });

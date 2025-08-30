@@ -25,12 +25,12 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
         const id = context.params.id;
         const { nombre, descripcion, stock, precio, idcategoria, idproveedor, updated_at } = body;
 
-        const updatedProduct = await prisma.productos.update({
+        const product = await prisma.productos.update({
             where: { id: Number(id) },
             data: {
                 nombre,
                 descripcion,
-                stock,
+                stock: Number(stock),
                 precio,
                 idcategoria,
                 idproveedor,
@@ -38,7 +38,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
             },
         });
 
-        return Response.json({ updatedProduct });
+        return Response.json({ product });
     } catch (error) {
         return Response.json({ error }, { status: 500 });
     }
