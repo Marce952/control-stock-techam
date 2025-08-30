@@ -8,8 +8,9 @@ import { CiEdit } from 'react-icons/ci';
 
 const Supplier = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({});
+  const [suppliers, setSuppliers] = useState([]);
+  const [newSupplier, setNewSupplier] = useState({});
+  const [edit, setEdit] = useState(null)
 
   useEffect(() => {
     get();
@@ -19,23 +20,27 @@ const Supplier = () => {
     try {
       const response = await axios.get('/pages/api/suppliers');
       if (!response.data) return;
-      setProducts(response.data);
+      setSuppliers(response.data);
     } catch (error) {
-      console.log("🚀 ~ getProducts ~ error:", error);
+      console.log("🚀 ~ getsuppliers ~ error:", error);
     }
   };
 
-  const post = async () => {
+  const onSave = async () => {
     try {
-      const response = await axios.post('/pages/api/suppliers', newProduct);
-      if (!response.data) return;
-      setNewProduct({});
+      if (edit) {
+        await axios.put(`/pages/api/suppliers/${edit.id}`, newSupplier);
+      } else {
+        await axios.post('/pages/api/suppliers', newSupplier);
+      }
+      setNewSupplier({});
+      setEdit(null);
       get();
-      onOpenChange(); // Cierra el modal después de guardar
+      onOpenChange();
     } catch (error) {
       console.log("🚀 ~ post ~ error:", error);
     }
-  };
+  }
 
   return (
     <div
@@ -43,17 +48,23 @@ const Supplier = () => {
     >
       <ModalComponent
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        title="Añadir un proveedor"
+        onOpenChange={()=>{
+          setEdit(null);
+          setNewSupplier({})
+          onOpenChange()
+        }}
+        title={edit ? "Editar un proveedor" :"Añadir un proveedor"}
+        buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
           { type: "text", placeholder: "Nombre del proveedor", name: "nombre" },
           { type: "text", placeholder: "Direccion", name: "direccion" },
           { type: "text", placeholder: "Telefono", name: "telefono" },
-          { type: "text", placeholder: "Mail", name: "mail" }
+          { type: "text", placeholder: "Mail", name: "mail" },
+          { type: "text", placeholder: "Sitio web", name: "sitio" },
         ]}
-        newProduct={newProduct}
-        setNewProduct={setNewProduct}
-        onPress={post}
+        newProduct={newSupplier}
+        setNewProduct={setNewSupplier}
+        onPress={onSave}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -81,7 +92,7 @@ const Supplier = () => {
             <TableColumn>Editar</TableColumn>
           </TableHeader>
           <TableBody>
-            {Array.isArray(products) && products.map((p) => (
+            {Array.isArray(suppliers) && suppliers.map((p) => (
               <TableRow key={p.id}>
                 <TableCell>{p.nombre}</TableCell>
                 <TableCell>{p.direccion}</TableCell>

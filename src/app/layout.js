@@ -24,9 +24,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen">
-          <SliderComponent />
-          <div className="flex-1">
+        <div className="h-screen">
+          <div>
             <Providers>
               {children}
             </Providers>
