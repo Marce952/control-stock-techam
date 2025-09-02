@@ -9,6 +9,19 @@ const Sale = lazy(() => import('../../Components/Sale'));
 const Supplier = lazy(() => import('../../Components/Supplier'));
 const Clients = lazy(() => import('../../Components/Clients'));
 
+const DashboardComponent = () => (
+  <div>
+    <h1 className='text-3xl font-bold mb-4'>Panel de control</h1>
+    <Divider />
+
+    <div className='grid'>
+      <div className='border-2 border-gray-300 w-1/4 h-20 rounded-md bg-white p-4'>
+        <p>Cantidad de clientes</p>
+      </div>
+    </div>
+  </div>
+);
+
 const SidebarButtons = [
   { label: 'Proveedores', key: 'supplier' },
   { label: 'Clientes', key: 'clients' },
@@ -21,10 +34,13 @@ const componentMap = {
   sale: <Sale />,
   supplier: <Supplier />,
   clients: <Clients />,
+  home: <DashboardComponent />
 };
 
+
+
 const DashboardPage = () => {
-  const [selected, setSelected] = useState('products');
+  const [selected, setSelected] = useState('home');
 
   return (
     <div className='container mx-auto h-screen'>
@@ -36,6 +52,7 @@ const DashboardPage = () => {
               <Button
                 variant='flat'
                 className='text-xl text-white bg-primary'
+                onPress={() => setSelected('home')}
               >
                 <GoHome />
               </Button>

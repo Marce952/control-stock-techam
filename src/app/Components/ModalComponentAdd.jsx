@@ -43,6 +43,7 @@ const ModalComponentAdd = ({
               {inputs.map((input, index) => (
                 <Input
                   key={index}
+                  label={input.label || ""}
                   type={input.type}
                   placeholder={input.placeholder}
                   value={newProduct[input.name] || input.value || ""}

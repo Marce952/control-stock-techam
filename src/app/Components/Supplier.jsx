@@ -56,11 +56,11 @@ const Supplier = () => {
         title={edit ? "Editar un proveedor" : "Añadir un proveedor"}
         buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
-          { type: "text", placeholder: "Nombre del proveedor", name: "nombre" },
-          { type: "text", placeholder: "Direccion", name: "direccion" },
-          { type: "text", placeholder: "Telefono", name: "telefono" },
-          { type: "text", placeholder: "Mail", name: "mail" },
-          { type: "text", placeholder: "Sitio web", name: "sitio" },
+          { type: "text", placeholder: "Nombre del proveedor", name: "nombre", label: "Nombre" },
+          { type: "text", placeholder: "Direccion", name: "direccion", label: "Direccion" },
+          { type: "text", placeholder: "Telefono", name: "telefono", label: "Telefono" },
+          { type: "text", placeholder: "Mail", name: "mail", label: "Mail" },
+          { type: "text", placeholder: "Sitio web", name: "sitio", label: "Sitio web" },
         ]}
         newProduct={newSupplier}
         setNewProduct={setNewSupplier}

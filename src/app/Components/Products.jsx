@@ -82,10 +82,10 @@ const Products = () => {
         title={editProduct ? "Editar producto" : "Añadir un producto"}
         buttonTitle={editProduct ? "Editar" : "Añadir"}
         inputs={[
-          { type: "text", placeholder: "Nombre del producto", name: "nombre" },
-          { type: "text", placeholder: "Descripcion producto", name: "descripcion" },
-          { type: "number", placeholder: "Precio del producto", name: "precio" },
-          { type: "number", placeholder: "Cantidad del producto", name: "stock" }
+          { type: "text", placeholder: "Nombre del producto", name: "nombre", label: "Nombre" },
+          { type: "text", placeholder: "Descripcion producto", name: "descripcion", label: "Descripcion" },
+          { type: "number", placeholder: "Precio del producto", name: "precio", label: "Precio" },
+          { type: "number", placeholder: "Cantidad del producto", name: "stock", label: "Stock" },
         ]}
         newProduct={newProduct}
         setNewProduct={setNewProduct}
@@ -147,7 +147,7 @@ const Products = () => {
                 <TableCell>
                   <Button
                     color='primary'
-                    className='text-xl text-white'
+                    className='text-2xl text-white'
                     onPress={() => {
                       setEditProduct(product);
                       setNewProduct({

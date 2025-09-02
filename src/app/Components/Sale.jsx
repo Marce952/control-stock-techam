@@ -99,10 +99,10 @@ const Sale = () => {
         title={edit ? "Editar una venta" : "Añadir una venta"}
         buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
-          { type: "number", placeholder: "Cantidad", name: "total_stock", isDisabled: !productSearch, max: uniqueProduct[0]?.stock || "" },
-          { type: "number", placeholder: "Stock", value: uniqueProduct[0]?.stock || "", isDisabled: true },
-          { type: "number", placeholder: "Precio", name: "precio_total", isDisabled: !productSearch },
-          { type: "text", placeholder: "Detalle", name: "observacion", isDisabled: !productSearch },
+          { type: "number", placeholder: "Cantidad", name: "total_stock", isDisabled: !productSearch, max: uniqueProduct[0]?.stock || "", label: "Cantidad" },
+          { type: "number", placeholder: "Stock", value: uniqueProduct[0]?.stock || "", isDisabled: true, label: "Stock" },
+          { type: "number", placeholder: "Precio", name: "precio_total", isDisabled: !productSearch, label: "Precio" },
+          { type: "text", placeholder: "Detalle", name: "observacion", isDisabled: !productSearch, label: "Detalle" },
         ]}
         newProduct={newSale}
         setNewProduct={setNewSale}
@@ -132,12 +132,12 @@ const Sale = () => {
           placeholder='Buscar venta'
         />
         <Button
-          startContent={<FaMoneyBillTransfer fontSize={'200px'} />}
+          startContent={<FaMoneyBillTransfer />}
           variant='solid'
+          className='text-white text-xl'
           color='primary'
           onPress={onOpen}
         >
-          Añadir venta
         </Button>
       </div>
 
@@ -159,7 +159,7 @@ const Sale = () => {
                 <TableCell>
                   <Button
                     color='primary'
-                    className='text-xl'
+                    className='text-2xl text-white'
                     onPress={() => {
                       setEdit(p);
                       setNewSale(p);

@@ -57,9 +57,9 @@ const Clients = () => {
         title={edit ? "Editar cliente" : "Añadir un cliente"}
         buttonTitle={edit ? "Editar" : "Añadir"}
         inputs={[
-          { type: "text", placeholder: "Nombre del cliente", name: "nombre" },
-          { type: "text", placeholder: "Telefono del cliente", name: "telefono" },
-          { type: "text", placeholder: "Mail del cliente", name: "mail" }
+          { type: "text", placeholder: "Nombre del cliente", name: "nombre", label: "Nombre" },
+          { type: "text", placeholder: "Telefono del cliente", name: "telefono", label: "Telefono" },
+          { type: "text", placeholder: "Mail del cliente", name: "mail", label: "Mail" }
         ]}
         newProduct={newClient}
         setNewProduct={setNewClient}
@@ -71,12 +71,12 @@ const Clients = () => {
           placeholder='Buscar cliente'
         />
         <Button
-          startContent={<BsPersonBoundingBox fontSize={'200px'} />}
+          startContent={<BsPersonBoundingBox />}
           variant='solid'
           color='primary'
+          className='text-white text-xl'
           onPress={onOpen}
         >
-          Crear cliente
         </Button>
       </div>
 
@@ -98,7 +98,7 @@ const Clients = () => {
                 <TableCell>
                   <Button
                     color='primary'
-                    className='text-xl'
+                    className='text-2xl text-white'
                     onPress={() => {
                       setEdit(c);
                       setNewClient(c);
