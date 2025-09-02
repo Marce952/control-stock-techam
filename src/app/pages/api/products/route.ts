@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
       descripcion,
       stock,
       precio,
-      idCategoria,
-      idProveedor,
+      idcategoria,
+      idproveedor,
     } = body;
 
     const producto = await prisma.productos.create({
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
         descripcion,
         stock: Number(stock),
         precio,
-        idcategoria: idCategoria,
-        idproveedor: idProveedor,
+        idcategoria: Number(idcategoria),
+        idproveedor: Number(idproveedor),
       },
     });
 

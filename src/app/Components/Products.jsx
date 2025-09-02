@@ -13,7 +13,7 @@ const Products = () => {
   const [newProduct, setNewProduct] = useState({});
   const [suppliers, setSuppliers] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     get();
     getCategories();
@@ -46,12 +46,15 @@ const Products = () => {
 
   const onSave = async () => {
     try {
+      setLoading(true)
       if (editProduct) {
-        await axios.put(`/pages/api/products/${editProduct.id}`, newProduct);
+        await axios.put(`/pages/api/products/${editProduct.id}`, newProduct)
       } else {
-        await axios.post('/pages/api/products', newProduct);
+        await axios.post('/pages/api/products', newProduct)
+        setLoading(true);
       }
       setNewProduct({});
+      setLoading(false)
       setEditProduct(null);
       get();
       onOpenChange();
@@ -94,6 +97,7 @@ const Products = () => {
           {
             label: "Proveedores",
             name: "idproveedor",
+            value: editProduct ? editProduct.idproveedor : "",
             options: suppliers,
             getLabel: (s) => s.nombre,
             getValue: (s) => s.id,
@@ -106,6 +110,7 @@ const Products = () => {
             getValue: (c) => c.id,
           }
         ]}
+        loading={loading}
       />
       {/* Filtros */}
       <div className='flex justify-around items-center gap-2'>
@@ -142,7 +147,7 @@ const Products = () => {
                 <TableCell>{product.descripcion}</TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>{product.precio}</TableCell>
-                <TableCell className={product.proveedor === null && 'text-red-500'}>{product?.proveedor?.nombre || "No hay proveedor asignado"}</TableCell>
+                <TableCell className={product.proveedor === null && 'text-red-500'}>{product?.proveedores?.nombre || "No hay proveedor asignado"}</TableCell>
                 <TableCell className={product.categoria === null && 'text-red-500'}>{product?.categoria?.tipo || "No hay categoria asignada"}</TableCell>
                 <TableCell>
                   <Button
@@ -152,8 +157,8 @@ const Products = () => {
                       setEditProduct(product);
                       setNewProduct({
                         ...product,
-                        idproveedor: product.idProveedor ?? product.proveedor?.id ?? "",
-                        idcategoria: product.idCategoria ?? product.categoria?.id ?? "",
+                        idproveedor: product.idproveedor ?? product.proveedor?.id ?? product.proveedores?.id ?? "",
+                        idcategoria: product.idcategoria ?? product.categoria?.id ?? "",
                       });
                       onOpen();
                     }}

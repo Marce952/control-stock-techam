@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from '@heroui/react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, Spinner } from '@heroui/react'
 import { useEffect } from 'react';
 
 const ModalComponentAdd = ({
@@ -13,6 +13,7 @@ const ModalComponentAdd = ({
   buttonTitle,
   selects = [],
   uniqueProduct = [],
+  loading
 }) => {
 
   const handleChange = (name, value) => {
@@ -58,7 +59,13 @@ const ModalComponentAdd = ({
                   <Select
                     key={idx}
                     label={select.label}
-                    value={(newProduct[select.name]) || ""}
+                    selectedKeys={
+                      newProduct[select.name] !== undefined
+                        ? [String(newProduct[select.name])]
+                        : select.value
+                          ? [String(select.value)]
+                          : []
+                    }
                     onChange={(e) => {
                       handleChange(select.name, e.target.value)
                       if (select.onChange) {
@@ -83,7 +90,12 @@ const ModalComponentAdd = ({
               <Button color="danger" variant="light" onPress={onClose}>
                 Cerrar
               </Button>
-              <Button color="primary" className='text-white' onPress={onPress}>
+              <Button
+                color="primary"
+                className='text-white'
+                onPress={onPress}
+                isLoading={loading}
+              >
                 {buttonTitle}
               </Button>
             </ModalFooter>
