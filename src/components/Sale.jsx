@@ -265,7 +265,18 @@ const Sale = () => {
                   </span>
                 </TableCell>
                 <TableCell className="font-semibold text-green-700">${p.precio_total}</TableCell>
-                <TableCell className="text-gray-500 max-w-[250px] truncate">{p.observacion || <span className="italic text-gray-400">Sin observaciones</span>}</TableCell>
+                <TableCell className="text-gray-500 max-w-[250px] truncate">
+                  {p.productos ? (
+                    <div>
+                      <span className="font-semibold text-gray-700">
+                        {p.productos.nombre} x {p.total_stock} (${(Number(p.precio_total) / Number(p.total_stock)).toFixed(2)})
+                      </span>
+                      {p.observacion && <span className="block text-xs text-gray-400 mt-1">Nota: {p.observacion}</span>}
+                    </div>
+                  ) : (
+                    p.observacion || <span className="italic text-gray-400">Sin observaciones</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-right">
                   <Button
                     isIconOnly

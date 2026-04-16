@@ -14,13 +14,15 @@ model categoria {
 }
 
 model clientes {
-  id         Int       @id @default(autoincrement())
-  nombre     String    @db.VarChar(20)
-  telefono   String?   @db.VarChar(20)
-  mail       String?   @db.VarChar(30)
-  deuda      Decimal?  @default(0) @db.Decimal(10, 2)
-  deleted_at DateTime? @db.Timestamp(6)
-  ventas     ventas[]
+  id                    Int       @id @default(autoincrement())
+  nombre                String    @db.VarChar(20)
+  telefono              String?   @db.VarChar(20)
+  mail                  String?   @db.VarChar(30)
+  deuda                 Decimal?  @default(0) @db.Decimal(10, 2)
+  fecha_inicio_deuda    DateTime? @db.Timestamp(6)
+  fecha_ultimo_movimiento DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at            DateTime? @db.Timestamp(6)
+  ventas                ventas[]
 }
 
 model empleados {

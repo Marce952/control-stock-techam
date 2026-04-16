@@ -28,9 +28,16 @@ const Clients = () => {
 
   const onSave = async () => {
     try {
+      if (Number(newClient.deuda) > 0 && !newClient.fecha_inicio_deuda) {
+        alert("Por favor, ingrese la Fecha de Inicio de Deuda.");
+        return;
+      }
+      
       const payload = {
         ...newClient,
-        deuda: newClient.deuda ? Number(newClient.deuda) : 0
+        deuda: newClient.deuda ? Number(newClient.deuda) : 0,
+        fecha_inicio_deuda: newClient.deuda ? (newClient.fecha_inicio_deuda ? new Date(newClient.fecha_inicio_deuda).toISOString() : new Date().toISOString()) : null,
+        fecha_ultimo_movimiento: new Date().toISOString()
       };
       
       if (edit) {
@@ -147,8 +154,9 @@ const Clients = () => {
           { type: "text", placeholder: "Ej. Juan Pérez", name: "nombre", label: "Nombre Completo" },
           { type: "text", placeholder: "+54 9 11 1234 5678", name: "telefono", label: "Teléfono" },
           { type: "text", placeholder: "juan@ejemplo.com", name: "mail", label: "Correo Electrónico" },
-          { type: "number", placeholder: "Ej. 5000", name: "deuda", label: "Deuda / Fiado ($)" }
-        ]}
+          { type: "number", placeholder: "Ej. 5000", name: "deuda", label: "Deuda / Fiado ($)" },
+          Number(newClient.deuda) > 0 ? { type: "date", name: "fecha_inicio_deuda", label: "Fecha de Inicio de Deuda", isRequired: true } : null
+        ].filter(Boolean)}
         newProduct={newClient}
         setNewProduct={setNewClient}
         onPress={onSave}
@@ -199,8 +207,15 @@ const Clients = () => {
                 <TableCell className="font-medium text-gray-900">{c.nombre}</TableCell>
                 <TableCell className="text-gray-500">{c.telefono || <span className="text-gray-400 italic">No especificado</span>}</TableCell>
                 <TableCell className="text-gray-500">{c.mail || <span className="text-gray-400 italic">No especificado</span>}</TableCell>
-                <TableCell className={`font-semibold ${Number(c.deuda) > 0 ? 'text-red-500' : 'text-gray-500'}`}>
-                  ${Number(c.deuda || 0).toFixed(2)}
+                <TableCell>
+                  <div className={`font-semibold ${Number(c.deuda) > 0 ? 'text-red-500' : 'text-gray-500'}`}>
+                    ${Number(c.deuda || 0).toFixed(2)}
+                  </div>
+                  {Number(c.deuda) > 0 && c.fecha_ultimo_movimiento && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      Últ. mov: {new Date(c.fecha_ultimo_movimiento).toLocaleDateString()}
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button

@@ -5,6 +5,8 @@ import { CiEdit } from "react-icons/ci";
 import React, { useEffect, useState } from 'react'
 import ModalComponentAdd from './ModalComponentAdd';
 import axios from 'axios';
+import { bulkUpdatePrices } from '@/actions/bulkUpdatePrices';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Products = () => {
   const { isOpen: isProductOpen, onOpen: onProductOpen, onOpenChange: onProductOpenChange } = useDisclosure();
@@ -16,6 +18,16 @@ const Products = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // Bulk update states
+  const { isOpen: isBulkOpen, onOpen: onBulkOpen, onOpenChange: onBulkOpenChange } = useDisclosure();
+  const [bulkType, setBulkType] = useState('%');
+  const [bulkOperation, setBulkOperation] = useState('increase');
+  const [bulkValue, setBulkValue] = useState('');
+  const [bulkMessage, setBulkMessage] = useState({ type: '', text: '' });
+
+  // Critical stock filter
+  const [showCriticalStock, setShowCriticalStock] = useState(false);
   useEffect(() => {
     get();
     getCategories();
@@ -144,8 +156,38 @@ const Products = () => {
         product.codigo_barras?.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
+    
+    if (showCriticalStock) {
+      filteredProducts = filteredProducts.filter((product) => product.stock <= 10);
+    }
+    
     return filteredProducts;
-  }, [products, filterValue]);
+  }, [products, filterValue, showCriticalStock]);
+
+  const handleBulkUpdate = async () => {
+    const val = Number(bulkValue);
+    if (!val || val <= 0) {
+      setBulkMessage({ type: 'error', text: 'Ingresa un valor mayor a 0.' });
+      return;
+    }
+    setLoading(true);
+    setBulkMessage({ type: '', text: '' });
+    
+    const result = await bulkUpdatePrices(bulkType, bulkOperation, val);
+    
+    if (result.success) {
+      setBulkMessage({ type: 'success', text: result.message });
+      await get(); // Refrescar stock
+      setTimeout(() => {
+        onBulkOpenChange();
+        setBulkMessage({ type: '', text: '' });
+        setBulkValue('');
+      }, 2000);
+    } else {
+      setBulkMessage({ type: 'error', text: result.message });
+    }
+    setLoading(false);
+  };
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -304,6 +346,85 @@ const Products = () => {
         </ModalContent>
       </Modal>
 
+      <Modal isOpen={isBulkOpen} onOpenChange={onBulkOpenChange} backdrop="blur">
+        <ModalContent className="bg-white/90 backdrop-blur-xl border border-white/20">
+          {(onClose) => (
+            <>
+              <ModalHeader className="text-xl font-semibold text-gray-800 border-b border-gray-100">
+                Actualización Masiva de Precios
+              </ModalHeader>
+              <ModalBody className="py-6 flex flex-col gap-4">
+                <p className="text-sm text-gray-500 bg-purple-50 p-3 rounded-lg border border-purple-100">
+                  Esta acción modificará el precio de <strong>TODOS</strong> los productos del catálogo. Selecciona la operación que deseas realizar.
+                </p>
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-2 w-1/2">
+                    <label className="text-sm font-medium text-gray-700">Operación</label>
+                    <select 
+                      className="border-gray-200 bg-gray-50 rounded-lg p-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                      value={bulkOperation} 
+                      onChange={(e) => setBulkOperation(e.target.value)}
+                    >
+                      <option value="increase">Aumentar (+)</option>
+                      <option value="decrease">Disminuir (-)</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2 w-1/2">
+                    <label className="text-sm font-medium text-gray-700">Tipo de ajuste</label>
+                    <select 
+                      className="border-gray-200 bg-gray-50 rounded-lg p-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                      value={bulkType} 
+                      onChange={(e) => setBulkType(e.target.value)}
+                    >
+                      <option value="%">Porcentaje (%)</option>
+                      <option value="$">Monto Fijo ($)</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <Input
+                    label="Valor a aplicar"
+                    labelPlacement="outside"
+                    type="number"
+                    placeholder="Ej. 15"
+                    variant="faded"
+                    value={bulkValue}
+                    onChange={(e) => setBulkValue(e.target.value)}
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {bulkMessage.text && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      exit={{ opacity: 0, y: -10 }}
+                      className={`p-3 rounded-lg text-sm font-medium ${bulkMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                    >
+                      {bulkMessage.text}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <p className="text-xs text-red-500 italic mt-2 font-medium">
+                  ⚠️ Advertencia: ¿Estás seguro que deseas continuar?
+                </p>
+              </ModalBody>
+              <ModalFooter className="border-t border-gray-100">
+                <Button variant="flat" onPress={onClose} isDisabled={loading}>Cancelar</Button>
+                <Button 
+                   onPress={handleBulkUpdate} 
+                   className="bg-[#7C3AED] text-white" 
+                   isLoading={loading}
+                >
+                  Confirmar Actualización
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
       {/* Filtros */}
       <div className='flex justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100'>
         <div className="w-1/3 min-w-[300px]">
@@ -317,19 +438,38 @@ const Products = () => {
             classNames={{ inputWrapper: 'bg-gray-50' }}
           />
         </div>
-        <Button
-          startContent={<TbDeviceAirpods size={20} />}
-          variant='shadow'
-          color='primary'
-          className="font-medium px-6"
-          onPress={() => {
-            setEditProduct(null);
-            setNewProduct({});
-            onProductOpen();
-          }}
-        >
-          Nuevo Producto
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant={showCriticalStock ? 'solid' : 'bordered'}
+            color={showCriticalStock ? 'danger' : 'default'}
+            onPress={() => setShowCriticalStock(!showCriticalStock)}
+            className="font-medium"
+          >
+            {showCriticalStock ? 'Viendo Stock Crítico' : 'Filtrar Stock Crítico'}
+          </Button>
+          
+          <Button
+            variant="flat"
+            className="font-medium px-4 text-[#7C3AED] bg-purple-50"
+            onPress={onBulkOpen}
+          >
+            Actualizar Precios
+          </Button>
+
+          <Button
+            startContent={<TbDeviceAirpods size={20} />}
+            variant='shadow'
+            className="font-medium px-6 bg-[#7C3AED] text-white"
+            onPress={() => {
+              setEditProduct(null);
+              setNewProduct({});
+              onProductOpen();
+            }}
+          >
+            Nuevo Producto
+          </Button>
+        </div>
       </div>
 
       {/* Ver los productos */}
