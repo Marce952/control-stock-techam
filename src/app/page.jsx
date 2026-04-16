@@ -1,10 +1,11 @@
 "use client";
 import { Button, Card, CardBody, CardFooter, CardHeader, Image, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import HeroHeader from "./Components/landing/HeroHeader";
-import { Features } from "./Components/landing/Features";
-import { Pricing } from "./Components/landing/Pricing";
-import { Footer } from "./Components/landing/Footer";
+import HeroHeader from "@/components/landing/HeroHeader";
+import { Features } from "@/components/landing/Features";
+import { Pricing } from "@/components/landing/Pricing";
+import { Footer } from "@/components/landing/Footer";
+import { FAQ } from "@/components/landing/FAQ";
 // import { useSession } from "next-auth/react";
 // import { toast } from "react-toastify";
 // import { useState } from "react";
@@ -92,6 +93,50 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 z-50 md:px-24">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#8906e6] to-[#6b05b0] rounded-lg flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L18.7071 8.70711C18.8946 8.89464 19 9.149 19 9.41421V19C19 20.1046 18.1046 21 17 21Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <span className="text-xl text-gray-900">DevStock</span>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#inicio" className="text-gray-600 hover:text-[#8906e6] transition-colors duration-200">
+                Inicio
+              </a>
+              <a href="#caracteristicas" className="text-gray-600 hover:text-[#8906e6] transition-colors duration-200">
+                Características
+              </a>
+              <a href="#precios" className="text-gray-600 hover:text-[#8906e6] transition-colors duration-200">
+                Precios
+              </a>
+              <a href="#faq" className="text-gray-600 hover:text-[#8906e6] transition-colors duration-200">
+                FAQ
+              </a>
+              <button className="bg-[#8906e6] hover:bg-[#6b05b0] text-white px-6 py-2 rounded-lg transition-colors duration-200">
+                Adquirir ahora
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button className="text-gray-600 hover:text-[#8906e6] transition-colors duration-200">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero */}
       <HeroHeader />
 
@@ -141,7 +186,7 @@ export default function LandingPage() {
       </section> */}
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary">
+      {/* <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             ¿Listo para transformar tu gimnasio?
@@ -181,10 +226,13 @@ export default function LandingPage() {
                   Solicitar Demo
                 </Button>
               </>
-            )} */}
+            )}
           </div>
         </div>
-      </section>
+      </section> */}
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Footer */}
       <Footer />

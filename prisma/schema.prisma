@@ -18,6 +18,7 @@ model clientes {
   nombre     String    @db.VarChar(20)
   telefono   String?   @db.VarChar(20)
   mail       String?   @db.VarChar(30)
+  deuda      Decimal?  @default(0) @db.Decimal(10, 2)
   deleted_at DateTime? @db.Timestamp(6)
   ventas     ventas[]
 }
@@ -35,19 +36,22 @@ model empleados {
 }
 
 model productos {
-  id          Int          @id @default(autoincrement())
-  nombre      String       @db.VarChar(30)
-  descripcion String?      @db.VarChar(150)
-  stock       Int?         @default(0)
-  precio      Decimal      @db.Decimal(10, 2)
-  idcategoria Int?
-  idproveedor Int?
-  created_at  DateTime?    @default(now()) @db.Timestamp(6)
-  updated_at  DateTime?    @default(now()) @db.Timestamp(6)
-  deleted_at  DateTime?    @db.Timestamp(6)
-  categoria   categoria?   @relation(fields: [idcategoria], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proveedores proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ventas      ventas[]
+  id            Int          @id @default(autoincrement())
+  codigo_barras String?      @unique @db.VarChar(50)
+  nombre        String       @db.VarChar(100)
+  descripcion   String?      @db.VarChar(150)
+  stock         Int?         @default(0)
+  stock_minimo  Int?         @default(0)
+  precio_costo  Decimal?     @default(0) @db.Decimal(10, 2)
+  precio        Decimal      @db.Decimal(10, 2)
+  idcategoria   Int?
+  idproveedor   Int?
+  created_at    DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?    @default(now()) @db.Timestamp(6)
+  deleted_at    DateTime?    @db.Timestamp(6)
+  categoria     categoria?   @relation(fields: [idcategoria], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedores   proveedores? @relation(fields: [idproveedor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ventas        ventas[]
 }
 
 model proveedores {
@@ -61,17 +65,28 @@ model proveedores {
 }
 
 model ventas {
-  id           Int        @id @default(autoincrement())
-  total_stock  Int
-  precio_total Decimal    @db.Decimal(10, 2)
-  observacion  String?    @db.VarChar(150)
-  idproducto   Int?
-  idcliente    Int?
-  idempleado   Int?
-  created_at   DateTime?  @default(now()) @db.Timestamp(6)
-  updated_at   DateTime?  @default(now()) @db.Timestamp(6)
-  deleted_at   DateTime?  @db.Timestamp(6)
-  clientes     clientes?  @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  empleados    empleados? @relation(fields: [idempleado], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  productos    productos? @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    Int        @id @default(autoincrement())
+  total_stock           Int
+  precio_total          Decimal    @db.Decimal(10, 2)
+  precio_costo_total    Decimal?   @db.Decimal(10, 2)
+  tipo_operacion        String?    @default("venta") @db.VarChar(20) // "venta" o "perdida"
+  observacion           String?    @db.VarChar(150)
+  idproducto            Int?
+  idcliente             Int?
+  idempleado            Int?
+  created_at            DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?  @default(now()) @db.Timestamp(6)
+  deleted_at            DateTime?  @db.Timestamp(6)
+  clientes              clientes?  @relation(fields: [idcliente], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  empleados             empleados? @relation(fields: [idempleado], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productos             productos? @relation(fields: [idproducto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model usuarios {
+  id         Int      @id @default(autoincrement())
+  username   String   @db.VarChar(20)
+  password   String   @db.VarChar(100)
+  rol        String   @db.VarChar(15)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
 }
