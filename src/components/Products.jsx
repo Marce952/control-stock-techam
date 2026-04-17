@@ -51,8 +51,6 @@ const Products = () => {
     try {
       const response = await axios.get('/api/categories');
       if (!response.data) return;
-
-      localStorage.setItem('category', JSON.stringify(response.data));
       setCategories(response.data);
     } catch (error) {
 
@@ -277,7 +275,7 @@ const Products = () => {
           {
             label: "Categoria",
             name: "idcategoria",
-            options: localStorage.getItem('category') ? JSON.parse(localStorage.getItem('category')) : categories,
+            options: categories,
             getLabel: (c) => c.tipo,
             getValue: (c) => c.id,
           }

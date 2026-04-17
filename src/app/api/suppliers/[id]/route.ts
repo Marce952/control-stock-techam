@@ -2,9 +2,11 @@
 import { NextRequest } from "next/server";
 import prisma from "@/utils/prisma";
 
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
     if (!id) {
       return Response.json({ error: "Missing supplier id" }, { status: 400 });
     }
@@ -19,10 +21,10 @@ export async function GET(request: NextRequest, context: { params: { id: string 
   }
 }
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
     const body = await request.json();
-    const id = context.params.id;
+    const { id } = await context.params;
     const { nombre, direccion, telefono, mail, sitio } = body;
 
     const supplier = await prisma.proveedores.update({
@@ -36,9 +38,9 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
   }
 }
 
-// export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+// export async function DELETE(request: NextRequest, context: RouteContext) {
 //   try {
-//     const id = context.params.id;
+//     const { id } = await context.params;
 
 //     const supplier = await prisma.proveedores.update({
 //       where: { id: Number(id) },

@@ -2,9 +2,11 @@
 import { NextRequest } from "next/server";
 import prisma from "@/utils/prisma";
 
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
     console.log("🚀 ~ GET ~ id:", id);
 
     if (!id) {
@@ -23,10 +25,10 @@ export async function GET(request: NextRequest, context: { params: { id: string 
   }
 }
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
     const body = await request.json();
-    const id = context.params.id;
+    const { id } = await context.params;
     console.log("🚀 ~ PUT ~ id:", id);
     const { nombre, telefono, mail, deuda } = body;
 
@@ -48,9 +50,9 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
   }
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    const id = context.params.id;
+    const { id } = await context.params;
     console.log("🚀 ~ DELETE ~ id:", id);
 
     const client = await prisma.clientes.update({

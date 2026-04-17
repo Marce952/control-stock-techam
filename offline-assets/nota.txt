@@ -1,0 +1,11 @@
+Copiar instaladores offline dentro de offline-assets
+Tenés que dejar estos dos archivos adentro:
+
+node-*-x64.msi
+(ejemplo: node-v22.14.0-x64.msi)
+postgresql-*-windows-x64.exe
+(ejemplo: postgresql-16.8-1-windows-x64.exe)
+
+Verificá que quedaron:
+
+Get-ChildItem .\offline-assets

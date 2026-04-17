@@ -13,8 +13,9 @@ export async function bulkUpdatePrices(
 
   try {
     const products = await prisma.productos.findMany();
+    type Product = (typeof products)[number];
 
-    const updatePromises = products.map((product) => {
+    const updatePromises = products.map((product: Product) => {
       let newPriceDec = Number(product.precio);
       if (type === "%") {
         const factor = value / 100;
