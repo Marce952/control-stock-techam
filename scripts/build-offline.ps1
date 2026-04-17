@@ -38,7 +38,13 @@ if (-not $PgInstaller) {
 Write-Step "Instalando dependencias y compilando Next.js"
 Push-Location $ProjectRoot
 npm.cmd ci
+if ($LASTEXITCODE -ne 0) {
+  throw "Fallo 'npm ci' (exit code $LASTEXITCODE). No se puede continuar con el empaquetado offline."
+}
 npm.cmd run build
+if ($LASTEXITCODE -ne 0) {
+  throw "Fallo 'npm run build' (exit code $LASTEXITCODE). No se puede continuar con el empaquetado offline."
+}
 Pop-Location
 
 Write-Step "Copiando archivos de la app"
